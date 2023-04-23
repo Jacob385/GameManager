@@ -34,7 +34,7 @@ module.exports = {
     .addIntegerOption(option =>
       option.setName('magnitude')
         .setDescription('the number of extra dice rolled for advantage')
-        .setMinValue(1)
+        .setMinValue(2)
         .setMaxValue(5)
     )
 

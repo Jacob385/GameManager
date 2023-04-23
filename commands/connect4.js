@@ -2,21 +2,20 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommand
 
 var gameHolder = [];
 
-function game(player1,player2)
-{
-this.player1=player1,
-  this.player2=player2,
-   currentPlayer = 1,//witch player starts
- 
-  //[X][]is row [][X]is column
-     board = [
+function game(player1, player2) {
+  this.player1 = player1,
+    this.player2 = player2,
+    currentPlayer = 1,//witch player starts
+
+    //[X][]is row [][X]is column
+    board = [
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0]];
-  
+
 }
 
 
@@ -39,27 +38,25 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply();
-    var player1 = interaction.user.id;// message.author.id TODO wich one?
-var player2 = interaction.options.getUser('opponent').id;
-    
-     //checks if user already has a game
-    let currentGame =null;
-  for(let x=0;x<gameHolder.length;x++)
     {
-      if(gameHolder[x].player1 === player1 ||gameHolder[x].player2 === player2)
-      {
+    let player1 = interaction.user.id;// message.author.id TODO wich one?
+    let player2 = interaction.options.getUser('opponent').id;
+
+    //checks if user already has a game
+    let currentGame = null;
+    for (let x = 0; x < gameHolder.length; x++) {
+      if (gameHolder[x].player1 === player1 || gameHolder[x].player2 === player2) {
         //TODO user has a game already
         currentGame = gameHolder[x];
-        x=gameHolder.length;//break
+        x = gameHolder.length;//break
       }
     }
-    if( currentGame ===null)
-    {    
-    //adds new game to holder
-gameHolder[gameHolder.length]=new game(player1,player2);
-    } 
-    
-    
+    if (currentGame === null) {
+      //adds new game to holder
+      gameHolder[gameHolder.length] = new game(player1, player2);
+    }
+    }
+
     boardBuilder = function(lastMove) {
       var boardString = '';
 
@@ -95,14 +92,14 @@ gameHolder[gameHolder.length]=new game(player1,player2);
         if (board[x][columnNum] == 0) {
           board[x][columnNum] = currentPlayer;
           currentPlayer = 3 - currentPlayer;//swaps 1 for 2 and 2 for 1
-         return checkWin(x, columnNum);         
+          return checkWin(x, columnNum);
         }
       }
     }
 
     checkWin = (x, y) => {
-      x= Number(x);
-      y=Number(y);
+      x = Number(x);
+      y = Number(y);
       let color = board[x][y];
       let inARow = [];
       //[direction][x/y value]
@@ -116,18 +113,17 @@ gameHolder[gameHolder.length]=new game(player1,player2);
           currentCell.x += vectorArray[direction][0];
           currentCell.y += vectorArray[direction][1];
 
-          try{
-          if (board[currentCell.x][currentCell.y] === color)
-            inARow[direction]++;
-          else
-            step = 3;
-          }catch(error)
-          {step = 3;}
+          try {
+            if (board[currentCell.x][currentCell.y] === color)
+              inARow[direction]++;
+            else
+              step = 3;
+          } catch (error) { step = 3; }
         }
       }
-     console.log(inARow);
+      console.log(inARow);
       for (let test = 0; test < 4; test++) {
-         console.log(inARow[test] +", "+ (test === 3 ? 0 : inARow[test + 4]));
+        console.log(inARow[test] + ", " + (test === 3 ? 0 : inARow[test + 4]));
         if (inARow[test] + (test === 3 ? 0 : inARow[test + 4]) >= 3) {
           return color;
         }
@@ -166,7 +162,11 @@ gameHolder[gameHolder.length]=new game(player1,player2);
       new ButtonBuilder()
         .setCustomId('column7')
         .setLabel('7')
-        .setStyle(ButtonStyle.Primary)
+        .setStyle(ButtonStyle.Primary),
+      new ButtonBuilder()
+        .setCustomId('column-1')
+        .setLabel('Quit')
+        .setStyle(ButtonStyle.Danger)
     );
 
     const embed = new EmbedBuilder()
@@ -174,17 +174,19 @@ gameHolder[gameHolder.length]=new game(player1,player2);
       .setTitle('Connect 4')
       .setDescription(boardBuilder(-1));
 
+
+
     await interaction.editReply({ content: `You challenged <@${player2}>.`, embeds: [embed], components: [row, row2] });
 
     {//buttons 
       const wait = require('node:timers/promises').setTimeout;
-     
+
 
 
       const filter = i => {
-       var columnIndex = Number(i.customId.split("n")[1]) - 1;
+        var columnIndex = Number(i.customId.split("n")[1]) - 1;
         ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7'].some(buttonID => i.customId === buttonID)
-          && !isColumnFull(columnIndex) 
+          && !isColumnFull(columnIndex)
           && i.user.id === (currentPlayer === 1 ? player1 : player2);
       };
 
@@ -193,27 +195,24 @@ gameHolder[gameHolder.length]=new game(player1,player2);
       collector.on('collect', async i => {
         await i.deferUpdate();
 
-        if(placePiece(columnIndex)>0)
-        {
-         
+        if (columnIndex < 0 || placePiece(columnIndex) > 0) {
           collector.stop();
-          await i.editReply({ content: ':trophy: '+(currentPlayer===2? `<@${player1}>.`: `<@${player2}>.`)+" Wins! :trophy:", embeds: [embed.setDescription(boardBuilder(columnIndex))], components: [] });
+          await i.editReply({ content: ':trophy: ' + (currentPlayer === 2 ? `<@${player1}>.` : `<@${player2}>.`) + " Wins! :trophy:", embeds: [embed.setDescription(boardBuilder(columnIndex))], components: [] });
         }
-        else
-        {
-          
-        //locks buttons on full rows
-        (columnIndex <= 5 ? row : row2).components.at(columnIndex % 5).setDisabled(isColumnFull(columnIndex));
+        else {
 
-          if(currentPlayer==1)
-          embed.setColor(0x0099FF);
-        else
-             embed.setColor(0xFF0000);
-        await i.editReply({ content: '', embeds: [embed.setDescription(boardBuilder(columnIndex))], components: [row, row2] });
+          //locks buttons on full rows
+          (columnIndex <= 5 ? row : row2).components.at(columnIndex % 5).setDisabled(isColumnFull(columnIndex));
+
+          if (currentPlayer == 1)
+            embed.setColor(0x0099FF);
+          else
+            embed.setColor(0xFF0000);
+          await i.editReply({ content: '', embeds: [embed.setDescription(boardBuilder(columnIndex))], components: [row, row2] });
         }
-        
+
       });
-    
+
       collector.on('end', collected => console.log(`Collected ${collected.size} items`));
     }
   },
