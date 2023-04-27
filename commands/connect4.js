@@ -27,11 +27,12 @@ module.exports = {
     {
       let player1 = interaction.user.id;// message.author.id TODO wich one?
       let player2 = interaction.options.getUser('opponent').id;
+      let interactionID = interaction.id;
+
 
       //checks if user already has a game
       for (let x = 0; x < gameHolder.length; x++) {
         if (gameHolder[x].player1 === player1 || gameHolder[x].player2 === player1) {
-          //TODO user has a game already
           currentGame = gameHolder[x];
           x = gameHolder.length;//break
           console.log("game already exist");///TODO remove debug
@@ -39,11 +40,10 @@ module.exports = {
       }
       if (currentGame === null) {
         //adds new game to holder
-        var game = {
+        let game = {
           player1: player1,
           player2: player2,
           currentPlayer: 1,//witch player starts
-
           //[X][]is row [][X]is column
           board: [
             [0, 0, 0, 0, 0, 0, 0],
@@ -54,9 +54,9 @@ module.exports = {
             [0, 0, 0, 0, 0, 0, 0]]
         }
 
-        gameHolder[gameHolder.length] = game
+        gameHolder[gameHolder.length] = game;
         currentGame = game;
-        console.log("game added");///TODO remove debug
+        console.log("\ngame added: "+Number(gameHolder.length-1));///TODO remove debug
 
       }
     }
@@ -173,32 +173,44 @@ module.exports = {
     );
 
     const embed = new EmbedBuilder()
-      .setColor((currentGame.currentPlayer === 1?0x0099FF:0xFF0000))
+      .setColor((currentGame.currentPlayer === 1 ? 0x0099FF : 0xFF0000))
       .setTitle('Connect 4')
       .setDescription(boardBuilder(-1, currentGame.board));
 
 
 
-    await interaction.editReply({ content: `You challenged <@${currentGame.player2}>.`, embeds: [embed], components: [row, row2] });
-
+  const message = await interaction.editReply({ content: `You challenged <@${currentGame.player2}>.`, embeds: [embed], components: [row, row2] });
+    currentGame.gameID = message.id;//TODO check id
+      console.log(message.id);///TODO remove debug
+      await message.channel.send(message.id);//TODO remove debug
+    
     {//buttons 
-      
+
       const filter = i => {
         var columnIndex = Number(i.customId.split("n")[1]) - 1;
-
+console.log(this.id);///TODO remove debug
+        //console.log('\nmessage.interaction.id: ' + i.message.interaction.id);///TODO remove debug
+   //    console.log('\nmessage.id :' + i.message.id);///TODO remove debug
+//console.log('/////////////////////////////////////////////////////////////////////\nmessage. :' ); console.log(i);///TODO remove debug
         for (let x = 0; x < gameHolder.length; x++) {
-          if (gameHolder[x].player1 === i.user.id || gameHolder[x].player2 === i.user.id) {
+          //TODO  I need the id of the message (?) to match the id of the message that had a button pressed(i.message.id)
+          if (i.message.id === gameHolder[x].gameID) {
+            console.log("found game :" + x);///TODO remove debug
+            if (gameHolder[x].player1 === i.user.id || gameHolder[x].player2 === i.user.id) {
 
-            console.log("\nfound game :" + x);///TODO remove debug
+              console.log("player match");///TODO remove debug
 
-            //if a user hits quit
-            if(i.customId === 'column-1' && (i.user.id === gameHolder[x].player1 || i.user.id === gameHolder[x].player2))
-            return true;
-            
-             return ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7'].some(buttonID => i.customId === buttonID)
-                && !isColumnFull(columnIndex, gameHolder[x].board)           
-              && i.user.id === (gameHolder[x].currentPlayer === 1 ? gameHolder[x].player1 : gameHolder[x].player2);
-                 
+              //if a user hits quit
+              if (i.customId === 'column-1' && (i.user.id === gameHolder[x].player1 || i.user.id === gameHolder[x].player2))
+                return true;
+
+              let buttonList = ['column1', 'column2', 'column3', 'column4', 'column5', 'column6', 'column7'];
+              return buttonList.some(buttonID => i.customId === buttonID)
+                && !isColumnFull(columnIndex, gameHolder[x].board)
+                && i.user.id === (gameHolder[x].currentPlayer === 1 ? gameHolder[x].player1 : gameHolder[x].player2);
+
+
+            }
           }
         }
         return false;
@@ -208,32 +220,39 @@ module.exports = {
       const collector = interaction.channel.createMessageComponentCollector({ filter, max: 42 });
       collector.on('collect', async i => {
         console.log("passed filter");///TODO remove debug
+     
+        
         await i.deferUpdate();
 
         console.log("inside collector");///TODO remove debug
-       
+
         var columnIndex = Number(i.customId.split("n")[1]) - 1;
-        var currentGame;
+        var currentGame = null;
         let x;
         for (x = 0; x < gameHolder.length; x++) {
-          if (gameHolder[x].player1 === i.user.id || gameHolder[x].player2 === i.user.id) {
-            currentGame = gameHolder[x];
-            break;
+          if (i.message.id === gameHolder[x].gameID) {
+            if (gameHolder[x].player1 === i.user.id || gameHolder[x].player2 === i.user.id) {
+              currentGame = gameHolder[x];
+              break;
+            }
           }
         }
-        
+        if (currentGame === null) {
+          await i.editReply({ content: 'There was an error while looking for this game!' });
+        }
 
 
-        if (columnIndex < 0) {
+        if (columnIndex < 0) {//if someing quit
           console.log("quit game");///TODO remove debug
           collector.stop();
-gameHolder.splice(x,1);
+          gameHolder.splice(x, 1);
+          //TODO fix who is listed as the winner
           await i.editReply({ content: ':trophy: ' + (currentGame.currentPlayer === 2 ? `<@${currentGame.player1}>.` : `<@${currentGame.player2}>.`) + " Wins! :trophy:", embeds: [embed], components: [] });
 
-        } else if (placePiece(columnIndex, currentGame) > 0) {
+        } else if (placePiece(columnIndex, currentGame) > 0) {//if someone won
           console.log("game won");///TODO remove debug
           collector.stop();
-          gameHolder.splice(x,1);
+          gameHolder.splice(x, 1);
           await i.editReply({ content: ':trophy: ' + (currentGame.currentPlayer === 2 ? `<@${currentGame.player1}>.` : `<@${currentGame.player2}>.`) + " Wins! :trophy:", embeds: [embed.setDescription(boardBuilder(columnIndex, currentGame.board))], components: [] });
         }
         else {

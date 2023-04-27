@@ -1,5 +1,5 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
-
+const {AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const Canvas = require('@napi-rs/canvas');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('tic-tac-toe')
@@ -86,22 +86,48 @@ module.exports = {
     ActionRowArray.at(1).components.at(0).setDisabled(false)
     //.forEach(row => { row.components.forEach(button =>{})})
 
+const canvas = Canvas.createCanvas(250, 250);
+		const context = canvas.getContext('2d');
 
-    // await i.editReply({ content: ':trophy: '+(currentPlayer===2? `<@${player1}>.`: `<@${player2}>.`)+" Wins!     
-    //:trophy:", embeds: [embed.setDescription(boardBuilder(columnIndex))], components: [] });
-    await interaction.editReply({ content: boardToString(board), embeds: [], components: ActionRowArray });
+// Set the color of the stroke
+	context.strokeStyle = '#000000';
+//70 20 70 20 70 
+	// Draw a rectangle with the dimensions of the entire canvas
+	context.fillRect(0, 70, canvas.width, 20);
+    context.fillRect(0, 160, canvas.width, 20);
+    context.fillRect(70, 0, 20, canvas.height);
+    context.fillRect(160, 0, 20, canvas.height);
+	// Select the font size and type from one of the natively available fonts
+	context.font = '60px sans-serif';
 
-    const filter = i => { }
+	// Select the style that will be used to fill the text in
+	context.fillStyle = '#FF0000';//red
+//context.fillStyle = '#0000FF';//blue
+	// Actually fill the text with a solid color
+  console.log(  context.measureText('X').width);//43
+ console.log(    context.measureText('O').width);
+	context.fillText('X', 14, 60);
+    context.fillText('X', 104, 60);
+    context.fillText('X', 194, 60);
+    context.fillText('X', 14, 150);
+    context.fillText('X', 14, 240);
+    context.fillText('X', 104, 150);
+const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'tic-tac-toe_board.png' });
+    
+    await interaction.editReply({files: [attachment] ,content: '', embeds: [], components: ActionRowArray });
+  
+    {//buttons
+    const filter = i => {return true; }
     const collector = interaction.channel.createMessageComponentCollector({ filter, max: maxNumOfMoves });
     collector.on('collect', async i => {
       await i.deferUpdate();
 
 
 
-      await i.editReply({ content: '', embeds: [], components: [row, row2] });
+      await i.editReply({ content: '', embeds: [], components: [ActionRowArray] });
     });
     collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-
+    }
 
 
   },
