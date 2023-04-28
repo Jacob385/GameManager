@@ -137,9 +137,13 @@ module.exports = {
       }
       sum += winningRoll;
     }
-
-    await interaction.editReply(
-      '>>> Rolling a **' + quantity + 'D' + die + (modifier != 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage != null ? advantageString +(advantageMagnitude>1?': '+advantageMagnitude:''): '')
-      +'\n' + list + (modifier != 0 ? '\nResult: ' + sum + (modifier > 0 ? '+' : '') + modifier : '') + '\nFinal: **' + (sum + modifier) + '**');
+    
+    var output=  '>>> Rolling a **' + quantity + 'D' + die + (modifier != 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage != null ? advantageString +(advantageMagnitude>1?': '+advantageMagnitude:''): '')
+      +'\n' + list + (modifier != 0 ? '\nResult: ' + sum + (modifier > 0 ? '+' : '') + modifier : '') + '\nFinal: **' + (sum + modifier) + '**';
+    if(output.length<=2000)
+    {await interaction.editReply(output);
+    }else
+      {await interaction.editReply('>>> Output exceeds the character limit. Try smaller numbers');
+    }
   },
 };

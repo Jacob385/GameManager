@@ -2,7 +2,7 @@ const {AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBui
 const Canvas = require('@napi-rs/canvas');
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('tic-tac-toe')
+    .setName('tic tac toe')
     .setDescription('Play Tic-Tac-Toe with a friend')
     .addUserOption(option =>
       option.setName('opponent')
@@ -83,36 +83,55 @@ module.exports = {
         }
         maxNumOfMoves = 81;
     }
-    ActionRowArray.at(1).components.at(0).setDisabled(false)
-    //.forEach(row => { row.components.forEach(button =>{})})
 
+    
+ //   const boardPicBuilder= () =>{
 const canvas = Canvas.createCanvas(250, 250);
 		const context = canvas.getContext('2d');
 
 // Set the color of the stroke
-	context.strokeStyle = '#000000';
+//	context.strokeStyle = '#000000';
 //70 20 70 20 70 
 	// Draw a rectangle with the dimensions of the entire canvas
 	context.fillRect(0, 70, canvas.width, 20);
     context.fillRect(0, 160, canvas.width, 20);
     context.fillRect(70, 0, 20, canvas.height);
     context.fillRect(160, 0, 20, canvas.height);
-	// Select the font size and type from one of the natively available fonts
-	context.font = '60px sans-serif';
 
-	// Select the style that will be used to fill the text in
+    
 	context.fillStyle = '#FF0000';//red
 //context.fillStyle = '#0000FF';//blue
-	// Actually fill the text with a solid color
-  console.log(  context.measureText('X').width);//43
- console.log(    context.measureText('O').width);
-	context.fillText('X', 14, 60);
-    context.fillText('X', 104, 60);
-    context.fillText('X', 194, 60);
-    context.fillText('X', 14, 150);
-    context.fillText('X', 14, 240);
-    context.fillText('X', 104, 150);
+    // Select the font size and type from one of the natively available fonts
+   
+   
+	context.font = '60px sans-serif';//exampal given 
+    console.log(context.font);///TODO remove debug 
+    context.fillText('XxOo', 14, 150);
+
+    
+    context.font='normal 60px Arial';
+ 
+	//context.font = '60px Lato';//TODO fix font
+console.log(context.font);///TODO remove debug
+   
+	
+
+	
+  //console.log(  context.measureText('X').width);//43
+// console.log(    context.measureText('O').width);
+	context.fillText('XxOo', 14, 60);
+//    context.fillText('X', 104, 60);
+  //  context.fillText('O', 194, 60);
+ //   context.fillText('X', 14, 150);
+  //  context.fillText('X', 14, 240);
+  //  context.fillText('X', 104, 150);
 const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'tic-tac-toe_board.png' });
+  //    return attachment;
+//}
+
+
+
+
     
     await interaction.editReply({files: [attachment] ,content: '', embeds: [], components: ActionRowArray });
   
@@ -128,7 +147,6 @@ const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'ti
     });
     collector.on('end', collected => console.log(`Collected ${collected.size} items`));
     }
-
 
   },
 };
