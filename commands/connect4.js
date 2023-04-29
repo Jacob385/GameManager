@@ -66,7 +66,7 @@ module.exports = {
 
       for (let x = 0; x < board[0].length; x++)
         boardString += (lastMove == x ? ':arrow_down_small: ' : ':record_button: ');//:blue_square:TODO clear up emogis 
-      // boardString += '\u25BC\n';
+      // boardString += '\u25BC\n';//\u3000
       boardString += '\n';
 
 

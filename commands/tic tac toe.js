@@ -2,8 +2,14 @@ const {AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBui
 const Canvas = require('@napi-rs/canvas');
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('tic tac toe')
-    .setDescription('Play Tic-Tac-Toe with a friend')
+    .setName('tic')
+    .setDescription('Play Tic with a friend')
+    .addSubcommandGroup(subcommandGroup => subcommandGroup
+	.setName('tac')
+	.setDescription('Play Tic-Tac with a friend')
+       .addSubcommand(subcommand =>		subcommand
+		.setName('toe')
+		.setDescription('Play Tic-Tac-Toe with a friend') 
     .addUserOption(option =>
       option.setName('opponent')
         .setDescription('Sellect a user to challenge')
@@ -18,6 +24,8 @@ module.exports = {
           { name: 'Compound', value: 2 }
         )
     )
+)
+  )
   ,
   async execute(interaction) {
     await interaction.deferReply();
