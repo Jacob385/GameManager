@@ -1,34 +1,35 @@
-const {AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
+const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const Canvas = require('@napi-rs/canvas');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('tic')
     .setDescription('Play Tic with a friend')
     .addSubcommandGroup(subcommandGroup => subcommandGroup
-	.setName('tac')
-	.setDescription('Play Tic-Tac with a friend')
-       .addSubcommand(subcommand =>		subcommand
-		.setName('toe')
-		.setDescription('Play Tic-Tac-Toe with a friend') 
-    .addUserOption(option =>
-      option.setName('opponent')
-        .setDescription('Sellect a user to challenge')
-        .setRequired(true)
-    )
-    .addIntegerOption(option =>
-      option.setName('gamemode')
-        .setDescription('notdone')//TODO
-        .addChoices(
-          { name: 'Classic', value: 0 },
-          { name: '3D', value: 1 },
-          { name: 'Compound', value: 2 }
+      .setName('tac')
+      .setDescription('Play Tic-Tac with a friend')
+      .addSubcommand(subcommand => subcommand
+        .setName('toe')
+        .setDescription('Play Tic-Tac-Toe with a friend')
+        .addUserOption(option =>
+          option.setName('opponent')
+            .setDescription('Sellect a user to challenge')
+            .setRequired(true)
         )
+        .addIntegerOption(option =>
+          option.setName('gamemode')
+            .setDescription('notdone')//TODO
+            .addChoices(
+              { name: 'Classic', value: 0 },
+              { name: '3D', value: 1 },
+              { name: 'Compound', value: 2 }
+            )
+        )
+      )
     )
-)
-  )
   ,
   async execute(interaction) {
     await interaction.deferReply();
+    /*
     var player1 = interaction.user.id;// message.author.id TODO wich one?
     var player2 = interaction.options.getUser('opponent').id;
     var gameMode = interaction.options.getInteger('gamemode') ?? 0;
@@ -40,12 +41,12 @@ module.exports = {
     boardToString = board2d => {
       let output = '';
       for (let x = 0; x < board2d.length; x++) {
-     
+
         for (let y = 0; y < board2d[x].length; y++) {
-          output += (board2d[x][y]!==0?(board2d[x][y]===1?':o:':':x:'):':black_large_square:') + ' ';
+          output += (board2d[x][y] !== 0 ? (board2d[x][y] === 1 ? ':o:' : ':x:') : ':black_large_square:') + ' ';
           output += (y < board2d[x].length - 1 ? '| ' : '');
         }
-        output+= (x<board.length-1?'\n\u2015 \uD83D \u2015 🞥 \u2015\n':'');       
+        output += (x < board.length - 1 ? '\n\u2015 \uD83D \u2015 🞥 \u2015\n' : '');
       }
       return output;
     }
@@ -92,69 +93,71 @@ module.exports = {
         maxNumOfMoves = 81;
     }
 
-    
- //   const boardPicBuilder= () =>{
-const canvas = Canvas.createCanvas(250, 250);
-		const context = canvas.getContext('2d');
 
-// Set the color of the stroke
-//	context.strokeStyle = '#000000';
-//70 20 70 20 70 
-	// Draw a rectangle with the dimensions of the entire canvas
-	context.fillRect(0, 70, canvas.width, 20);
+    //   const boardPicBuilder= () =>{
+    const canvas = Canvas.createCanvas(250, 250);
+    const context = canvas.getContext('2d');
+
+    // Set the color of the stroke
+    //	context.strokeStyle = '#000000';
+    //70 20 70 20 70 
+    // Draw a rectangle with the dimensions of the entire canvas
+    context.fillRect(0, 70, canvas.width, 20);
     context.fillRect(0, 160, canvas.width, 20);
     context.fillRect(70, 0, 20, canvas.height);
     context.fillRect(160, 0, 20, canvas.height);
 
-    
-	context.fillStyle = '#FF0000';//red
-//context.fillStyle = '#0000FF';//blue
+
+    context.fillStyle = '#FF0000';//red
+    //context.fillStyle = '#0000FF';//blue
     // Select the font size and type from one of the natively available fonts
-   
-   
-	context.font = '60px sans-serif';//exampal given 
+
+
+    context.font = '60px sans-serif';//exampal given 
     console.log(context.font);///TODO remove debug 
     context.fillText('XxOo', 14, 150);
 
-    
-    context.font='normal 60px Arial';
- 
-	//context.font = '60px Lato';//TODO fix font
-console.log(context.font);///TODO remove debug
-   
-	
 
-	
-  //console.log(  context.measureText('X').width);//43
-// console.log(    context.measureText('O').width);
-	context.fillText('XxOo', 14, 60);
-//    context.fillText('X', 104, 60);
-  //  context.fillText('O', 194, 60);
- //   context.fillText('X', 14, 150);
-  //  context.fillText('X', 14, 240);
-  //  context.fillText('X', 104, 150);
-const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'tic-tac-toe_board.png' });
-  //    return attachment;
-//}
+    context.font = 'normal 60px Arial';
+
+    //context.font = '60px Lato';//TODO fix font
+    console.log(context.font);///TODO remove debug
 
 
 
 
-    
-    await interaction.editReply({files: [attachment] ,content: '', embeds: [], components: ActionRowArray });
-  
-    {//buttons
-    const filter = i => {return true; }
-    const collector = interaction.channel.createMessageComponentCollector({ filter, max: maxNumOfMoves });
-    collector.on('collect', async i => {
-      await i.deferUpdate();
+    //console.log(  context.measureText('X').width);//43
+    // console.log(    context.measureText('O').width);
+    context.fillText('XxOo', 14, 60);
+    //    context.fillText('X', 104, 60);
+    //  context.fillText('O', 194, 60);
+    //   context.fillText('X', 14, 150);
+    //  context.fillText('X', 14, 240);
+    //  context.fillText('X', 104, 150);
+    const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'tic-tac-toe_board.png' });
+    //    return attachment;
+    //}
 
 
 
-      await i.editReply({ content: '', embeds: [], components: [ActionRowArray] });
-    });
-    collector.on('end', collected => console.log(`Collected ${collected.size} items`));
-    }
+
+
+    await interaction.editReply({ files: [attachment], content: '', embeds: [], components: ActionRowArray });
+*/
+    await interaction.editReply({ content: 'comming soon...' });
+
+  /*  {//buttons
+      const filter = i => { return true; }
+      const collector = interaction.channel.createMessageComponentCollector({ filter, max: maxNumOfMoves });
+      collector.on('collect', async i => {
+        await i.deferUpdate();
+
+
+
+        await i.editReply({ content: '', embeds: [], components: [ActionRowArray] });
+      });
+      collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+    }*/
 
   },
 };
