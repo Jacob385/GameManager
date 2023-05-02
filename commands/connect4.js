@@ -301,7 +301,8 @@ module.exports = {
       await interaction.editReply({ content: 'You cant challenge bots other than GameManager' });
     }
   */
-  
+  //test test TODO remove this line
+    var test = 1+1;
     await interaction.editReply({ content: 'Comeing Soon...' });
   }
 };
