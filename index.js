@@ -15,7 +15,7 @@ app.listen(3000, () => {
 const fs = require('node:fs');
 const path = require('node:path');
 // Require the necessary discord.js classes
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
@@ -65,12 +65,15 @@ client.on(Events.InteractionCreate, async interaction => {
 
 
 
-
 // When the client is ready, run this code (only once)
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
   console.log(`Logged in as ${c.user.tag}`);
+   
+ client.user.setActivity('in '+client.guilds.cache.size+' servers', { type: ActivityType.Playing });
+  
 });
+
 
 // Log in to Discord with your client's token
 client.login(token);
