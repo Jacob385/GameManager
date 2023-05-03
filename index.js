@@ -36,13 +36,13 @@ for (const file of commandFiles) {
   }
 }
 
-
+var isUndergoingMaintenanc = false;//toggle this
 client.on(Events.InteractionCreate, async interaction => {
 
   //if (!interaction.isButton()) return;
   if (!interaction.isChatInputCommand()) return;
-    //console.log(interaction);
-
+  //console.log(interaction);
+  if (interaction.user.id.toString() === '850136276304396304' || !isUndergoingMaintenanc) {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
@@ -61,6 +61,10 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
       }
     }
+  }
+  else {
+    await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again in a few minutes', ephemeral: true });
+  }
 });
 
 
@@ -69,9 +73,9 @@ client.on(Events.InteractionCreate, async interaction => {
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
   console.log(`Logged in as ${c.user.tag}`);
-   
- client.user.setActivity('in '+client.guilds.cache.size+' servers', { type: ActivityType.Playing });
-  
+
+  client.user.setActivity('in ' + client.guilds.cache.size + ' servers', { type: ActivityType.Playing });
+
 });
 
 
