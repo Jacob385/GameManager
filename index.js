@@ -61,7 +61,7 @@ client.on(Events.InteractionCreate, async interaction => {
     //cooldown check
     const now = Date.now();
     const timestamps = cooldowns.get(command.data.name);
-    const defaultCooldownDuration = 3;
+    const defaultCooldownDuration = 0;
     const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
 
     if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== '850136276304396304') {
