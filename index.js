@@ -36,13 +36,15 @@ for (const file of commandFiles) {
   }
 }
 
+client.cooldowns = new Collection();
 
+var isUndergoingMaintenanc = false;//toggle this
 client.on(Events.InteractionCreate, async interaction => {
 
   //if (!interaction.isButton()) return;
   if (!interaction.isChatInputCommand()) return;
-    //console.log(interaction);
-
+  //console.log(interaction);
+  if (interaction.user.id.toString() === '850136276304396304' || !isUndergoingMaintenanc) {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
@@ -50,6 +52,30 @@ client.on(Events.InteractionCreate, async interaction => {
       return;
     }
 
+    const { cooldowns } = client;
+
+    if (!cooldowns.has(command.data.name)) {
+      cooldowns.set(command.data.name, new Collection());
+    }
+
+    //cooldown check
+    const now = Date.now();
+    const timestamps = cooldowns.get(command.data.name);
+    const defaultCooldownDuration = 0;
+    const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
+
+    if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== '850136276304396304') {
+      const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+      if (now < expirationTime) {
+        const expiredTimestamp = Math.round(expirationTime / 1000);
+        return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true });
+      }
+    }
+    timestamps.set(interaction.user.id, now);
+    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+
+    //try to run command
     try {
       await command.execute(interaction);
     }
@@ -61,6 +87,10 @@ client.on(Events.InteractionCreate, async interaction => {
         await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
       }
     }
+  }
+  else {
+    await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again in a few minutes', ephemeral: true });
+  }
 });
 
 
@@ -69,9 +99,9 @@ client.on(Events.InteractionCreate, async interaction => {
 // We use 'c' for the event parameter to keep it separate from the already defined 'client'
 client.once(Events.ClientReady, c => {
   console.log(`Logged in as ${c.user.tag}`);
-   
- client.user.setActivity('in '+client.guilds.cache.size+' servers', { type: ActivityType.Playing });
-  
+
+  client.user.setActivity('in ' + client.guilds.cache.size + ' servers', { type: ActivityType.Playing });
+
 });
 
 
