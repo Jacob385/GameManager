@@ -39,10 +39,9 @@ for (const file of commandFiles) {
 
 client.on(Events.InteractionCreate, async interaction => {
 
-  //if (!interaction.isButton()) return;
+  //if (!interaction.isButton()) return; //TODO consiter handaling buttons over here
   if (!interaction.isChatInputCommand()) return;
-    //console.log(interaction);
-
+    
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
