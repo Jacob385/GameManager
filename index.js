@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
 
 app.listen(3000, () => {
   console.log('Well, it\'s one for the money');
-  console.log('two for the show');
+  console.log('Two for the show');
   console.log('Three to get ready');
   console.log('now go! cat! go!');
 })

@@ -24,7 +24,7 @@ module.exports = {
     )
     .addIntegerOption(option =>
       option.setName('advantage')
-        .setDescription('select if your rolling with advantage or disadvantage')
+        .setDescription('Select if your rolling with advantage or disadvantage')
         .addChoices(
           { name: 'Advantage', value: 1 },
           { name: 'Disadvantage', value: -1 },
@@ -33,11 +33,22 @@ module.exports = {
     )
     .addIntegerOption(option =>
       option.setName('magnitude')
-        .setDescription('the number of extra dice rolled for advantage')
+        .setDescription('The number of extra dice rolled for advantage')
         .setMinValue(2)
         .setMaxValue(5)
     )
+    .addIntegerOption(option =>
+      option.setName('extra')
+        .setDescription('Select Reliable Talent')//TODO
+        .addChoices(
+          { name: 'Dragon Starry Form', value: 0 },
+          { name: 'Ear for Deceit', value: 1 },
+          { name: 'Reliable Talent', value: 2 },
+          { name: 'Silver Tongue', value: 3 }
 
+
+        )
+    )
   ,
 
   async execute(interaction) {
@@ -48,7 +59,7 @@ module.exports = {
     let advantage = interaction.options.getInteger('advantage') ?? null;
     let modifier = interaction.options.getInteger('modifier') ?? 0;
     let advantageMagnitude = interaction.options.getInteger('magnitude') ?? 1;
-
+    let extra = interaction.options.getInteger('extra') ?? null;
 
 
     let set = [];
@@ -61,11 +72,9 @@ module.exports = {
         break;
       case 1: advantageString = 'Advantage';
         break;
-      case 2: advantageString = 'Double Advantage';
-        break;
       case -1: advantageString = 'Disadvantage';
         break;
-      case -2: advantageString = 'Double Disadvantage';
+
     }
 
     let fakeRoll = -1;
@@ -101,7 +110,7 @@ module.exports = {
           winningRoll = currentRoll;
         else if (advantage < 0 && winningRoll > currentRoll)//if disadvantage and current roll is lower
           winningRoll = currentRoll;
-        else if (advantage == 0) {
+        else if (advantage == 0) {//if emphasis and current roll is closer to middle 
           if (Math.abs((die / 2) - winningRoll) < Math.abs((die / 2) - currentRoll)) {
             winningRoll = currentRoll;
             winningEmphasisMatch = false;
