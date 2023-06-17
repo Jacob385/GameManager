@@ -41,10 +41,12 @@ client.cooldowns = new Collection();
 var isUndergoingMaintenanc = false;//toggle this
 client.on(Events.InteractionCreate, async interaction => {
 
-  //if (!interaction.isButton()) return;
+  //if (!interaction.isButton()) return; //TODO consiter handaling buttons over here
   if (!interaction.isChatInputCommand()) return;
+
   //console.log(interaction);
   if (interaction.user.id.toString() === '850136276304396304' || !isUndergoingMaintenanc) {
+
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
