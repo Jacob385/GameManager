@@ -16,7 +16,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 // Require the necessary discord.js classes
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js');
-const { token } = require('./config.json');
+const { token, userId } = require('./config.json');
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
@@ -36,64 +36,87 @@ for (const file of commandFiles) {
   }
 }
 
+
 client.cooldowns = new Collection();
 
-var isUndergoingMaintenanc = false;//toggle this
+var isUndergoingMaintenance = false;//toggle this
 client.on(Events.InteractionCreate, async interaction => {
 
   //if (!interaction.isButton()) return; //TODO consiter handaling buttons over here
   if (!interaction.isChatInputCommand()) return;
 
   //console.log(interaction);
-  if (interaction.user.id.toString() === '850136276304396304' || !isUndergoingMaintenanc) {
 
-    const command = interaction.client.commands.get(interaction.commandName);
 
-    if (!command) {
-      console.error(`No command matching ${interaction.commandName} was found.`);
-      return;
+  const command = interaction.client.commands.get(interaction.commandName);
+
+  if (!command) {
+    console.error(`No command matching ${interaction.commandName} was found.`);
+    return;
+  }
+
+
+  if (isUndergoingMaintenance || command.status !== 0) {
+    if(interaction.user.id.toString() !== userId){
+      switch (command.status) {
+      case 1:// Maintenance or testing
+        await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again later.', ephemeral: true });
+        return;
+        
+      case 2:// Comeing soon
+        await interaction.reply({ content: 'Comeing soon...', ephemeral: true });
+        
+      case 3:// Out of Order
+        await interaction.reply({ content: 'This command is temporarily out of order. Our team is working to get this up and running again soon. Thank you for your patience.', ephemeral: true });
+        return;
+        
+      default:// Unknown status
+        await interaction.reply({ content: 'This command has an unknown status error.', ephemeral: true });
+        return;
     }
-
-    const { cooldowns } = client;
-
-    if (!cooldowns.has(command.data.name)) {
-      cooldowns.set(command.data.name, new Collection());
     }
+    console.log("command.status: "+command.status);
+  }
 
-    //cooldown check
-    const now = Date.now();
-    const timestamps = cooldowns.get(command.data.name);
-    const defaultCooldownDuration = 0;
-    const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
 
-    if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== '850136276304396304') {
-      const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
 
-      if (now < expirationTime) {
-        const expiredTimestamp = Math.round(expirationTime / 1000);
-        return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true });
-      }
-    }
-    timestamps.set(interaction.user.id, now);
-    setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+  const { cooldowns } = client;
 
-    //try to run command
-    try {
-      await command.execute(interaction);
-    }
-    catch (error) {
-      console.error(error);
-      if (interaction.replied || interaction.deferred) {
-        await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-      } else {
-        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-      }
+  if (!cooldowns.has(command.data.name)) {
+    cooldowns.set(command.data.name, new Collection());
+  }
+
+  //cooldown check
+  const now = Date.now();
+  const timestamps = cooldowns.get(command.data.name);
+  const defaultCooldownDuration = 0;
+  const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000;
+
+  if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== userId) {
+    const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount;
+
+    if (now < expirationTime) {
+      const expiredTimestamp = Math.round(expirationTime / 1000);
+      return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true });
     }
   }
-  else {
-    await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again in a few minutes', ephemeral: true });
+  timestamps.set(interaction.user.id, now);
+  setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
+
+  //try to run command
+  try {
+    await command.execute(interaction);
   }
-});
+  catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+    } else {
+      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+    }
+  }
+
+});//end event
 
 
 

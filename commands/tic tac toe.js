@@ -1,6 +1,7 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js');
 const Canvas = require('@napi-rs/canvas');
 module.exports = {
+  status: 2,
   data: new SlashCommandBuilder()
     .setName('tic')
     .setDescription('Play Tic with a friend')
@@ -29,7 +30,7 @@ module.exports = {
   ,
   async execute(interaction) {
     await interaction.deferReply();
-    /*
+    
     var player1 = interaction.user.id;// message.author.id TODO wich one?
     var player2 = interaction.options.getUser('opponent').id;
     var gameMode = interaction.options.getInteger('gamemode') ?? 0;
@@ -143,7 +144,7 @@ module.exports = {
 
 
     await interaction.editReply({ files: [attachment], content: '', embeds: [], components: ActionRowArray });
-*/
+
     await interaction.editReply({ content: 'comming soon...' });
 
   /*  {//buttons
