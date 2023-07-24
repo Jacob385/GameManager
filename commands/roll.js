@@ -25,7 +25,7 @@ module.exports = {
     )
     .addIntegerOption(option =>
       option.setName('advantage')
-        .setDescription('select if your rolling with advantage or disadvantage')
+        .setDescription('Select if your rolling with advantage or disadvantage')
         .addChoices(
           { name: 'Advantage', value: 1 },
           { name: 'Disadvantage', value: -1 },
@@ -34,11 +34,22 @@ module.exports = {
     )
     .addIntegerOption(option =>
       option.setName('magnitude')
-        .setDescription('the number of extra dice rolled for advantage')
-        .setMinValue(2)
+        .setDescription('The number of extra dice rolled for advantage')
+        .setMinValue(1)
         .setMaxValue(5)
     )
+    .addIntegerOption(option =>
+      option.setName('extra')
+        .setDescription('Select Reliable Talent')//TODO
+        .addChoices(
+          { name: 'Dragon Starry Form', value: 0 },
+          { name: 'Ear for Deceit', value: 1 },
+          { name: 'Reliable Talent', value: 2 },
+          { name: 'Silver Tongue', value: 3 }
 
+
+        )
+    )
   ,
 
   async execute(interaction) {
@@ -49,24 +60,46 @@ module.exports = {
     let advantage = interaction.options.getInteger('advantage') ?? null;
     let modifier = interaction.options.getInteger('modifier') ?? 0;
     let advantageMagnitude = interaction.options.getInteger('magnitude') ?? 1;
-
+    let extra = interaction.options.getInteger('extra') ?? null;
 
 
     let set = [];
     let sum = 0;
     var list = '(';
 
-    var advantageString;
+    var advantageString;// used to print out witch 'advantage' is used
     switch (advantage) {
       case 0: advantageString = 'Emphasis';
         break;
       case 1: advantageString = 'Advantage';
         break;
-      case 2: advantageString = 'Double Advantage';
-        break;
       case -1: advantageString = 'Disadvantage';
         break;
-      case -2: advantageString = 'Double Disadvantage';
+    }
+
+    var bumpPoint;// used to bump the roll up to a least this value
+    var extraString;// used to print out witch 'extra' is used
+    switch (extra) {
+      case 0://Dragon Starry Form 
+        extraString = 'Dragon Starry Form';
+        bumpPoint = Math.floor(die / 2);
+        break; 
+      case 1://Ear for Deceit
+        extraString = 'Ear for Deceit';
+        bumpPoint = Math.floor(die / 2.5);
+        break;
+      case 2://Reliable Talent
+        extraString = 'Reliable Talent';
+        bumpPoint = Math.floor(die / 2);
+        break;
+      case 3://Silver Tongue
+        extraString = 'Silver Tongue';
+        bumpPoint = Math.floor(die / 2);
+        break;
+     
+      default:
+        extraString = "";
+        bumpPoint = 0;
     }
 
     let fakeRoll = -1;
@@ -87,11 +120,12 @@ module.exports = {
 
       let x = 0;
       do {
+        //if fake roll is used throw it somewere in the pool
         if (Math.floor(Math.random() * ((advantage === null ? 0 : advantageMagnitude + 1) - x)) === 0 && fakeRoll > -1) {
           currentRoll = (fakeRoll <= die ? fakeRoll : die);
           fakeRoll = -1;
         }
-        else {
+        else {// else roll normaly
           currentRoll = Math.floor(Math.random() * die) + 1;
         }
         set[x] = currentRoll;
@@ -102,7 +136,7 @@ module.exports = {
           winningRoll = currentRoll;
         else if (advantage < 0 && winningRoll > currentRoll)//if disadvantage and current roll is lower
           winningRoll = currentRoll;
-        else if (advantage == 0) {
+        else if (advantage == 0) {//if emphasis and current roll is closer to middle 
           if (Math.abs((die / 2) - winningRoll) < Math.abs((die / 2) - currentRoll)) {
             winningRoll = currentRoll;
             winningEmphasisMatch = false;
@@ -116,16 +150,58 @@ module.exports = {
 
       //bolds the number used and crosses out the unused ones as they are added to the string
       var isWinningRollAdded = false;
+      var isBumped = false;
       for (let x = 0; x < set.length; x++) {
-        if (set[x] == winningRoll && !isWinningRollAdded && !winningEmphasisMatch) {
+        //if its the roll that is used
+        if (set[x] == winningRoll && !isWinningRollAdded && !winningEmphasisMatch && set[x] >= bumpPoint) {
           list += '**' + set[x] + '**';
           isWinningRollAdded = true;
         }
         else {
           list += '~~' + set[x] + '~~';
         }
+        if (set[x] < bumpPoint) {
+          set[x] = bumpPoint;
+          isBumped = true;
+        }
+
         //some formating to seperate the numbers with commas
-        list += (x < set.length - 1) ? ', ' : ')';
+        if (x < set.length - 1) {
+          list += ', ';
+        }
+        else {
+          list += ')';
+          if (isBumped) {
+            list += " Bumped! (";
+           
+            isBumped=false;
+            isWinningRollAdded=false
+ x = 0;
+do{
+ currentRoll=  set[x] ;
+if (x == 0)//if first roll
+          winningRoll = currentRoll;
+        else if (advantage > 0 && winningRoll < currentRoll)//if advantage and current roll is highter
+          winningRoll = currentRoll;
+        else if (advantage < 0 && winningRoll > currentRoll)//if disadvantage and current roll is lower
+          winningRoll = currentRoll;
+        else if (advantage == 0) {//if emphasis and current roll is closer to middle 
+          if (Math.abs((die / 2) - winningRoll) < Math.abs((die / 2) - currentRoll)) {
+            winningRoll = currentRoll;
+            winningEmphasisMatch = false;
+          }
+          else if (Math.abs((die / 2) - winningRoll) == Math.abs((die / 2) - currentRoll) && winningRoll != currentRoll)
+            winningEmphasisMatch = true;
+        }
+
+        x++;
+      } while (advantage != null && x < advantageMagnitude + 1);
+ x = -1;
+
+
+            
+          }
+        }
       }
 
       if (y < quantity - 1) {//if end of the line then starts a new line
@@ -139,7 +215,7 @@ module.exports = {
       sum += winningRoll;
     }
 
-    var output = '>>> Rolling a **' + quantity + 'D' + die + (modifier != 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage != null ? advantageString + (advantageMagnitude > 1 ? ': ' + advantageMagnitude : '') : '')
+    var output = '>>> Rolling a **' + quantity + 'D' + die + (modifier != 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage != null ? advantageString + (advantageMagnitude > 1 ? ': ' + advantageMagnitude+' ' : ' ') : '')+extraString
       + '\n' + list + (modifier != 0 ? '\nResult: ' + sum + (modifier > 0 ? '+' : '') + modifier : '') + '\nFinal: **' + (sum + modifier) + '**';
 
     if (output.length <= 2000) {
