@@ -5,6 +5,7 @@ const { request } = require('undici');
 var testArray = [];
 
 module.exports = {
+  status: 1,
   data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!'),

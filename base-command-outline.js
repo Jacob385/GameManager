@@ -2,6 +2,7 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
+  status: 2,
   data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!'),

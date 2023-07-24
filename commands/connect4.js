@@ -2,8 +2,8 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommand
 
 var gameHolder = [];
 
-
 module.exports = {
+  status: 2,
   data:
     new SlashCommandBuilder()
       .setName('connect4')
@@ -22,7 +22,7 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply();
-/*
+
     let currentGame = null;
 
     let player1 = interaction.user.id;
@@ -32,7 +32,7 @@ module.exports = {
     console.log(player2.id);///TODO remove debug
 
 
-    if (player2.id.toString() === '1090044796845957180') {
+    if (player2.id.toString() === '1090044796845957180') {//TODO
       await interaction.editReply({ content: 'Challengeing GameManager comeing soon...' });
     }
     else if (!player2.bot) {
@@ -198,13 +198,15 @@ module.exports = {
         const filter = i => {
           var columnIndex = Number(i.customId.split("n")[1]) - 1;
 
-          /* //get last message
+           /*
+           //get last message
           const messages = i.channel.messages.fetch({ limit: 2 });//needs to be async
           console.log(messages);
           const lastMessage = messages.last();
   
           console.log(lastMessage.content);
-          /////////////////////////////////////////////////////////////TODO:* /
+          /////////////////////////////////////////////////////////////TODO:
+          */
 
           //console.log(i);///TODO remove debug
 
@@ -300,9 +302,7 @@ module.exports = {
     else {
       await interaction.editReply({ content: 'You cant challenge bots other than GameManager' });
     }
-  */
-  //test test TODO remove this line
-    var test = 1+1;
-    await interaction.editReply({ content: 'Comeing Soon...' });
+  
+  
   }
 };

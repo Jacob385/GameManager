@@ -1,6 +1,7 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
+  status: 0,
   data: new SlashCommandBuilder()
     .setName('coin')
     .setDescription('flip')

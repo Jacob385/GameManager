@@ -3,6 +3,7 @@ const Canvas = require('@napi-rs/canvas');
 const { request } = require('undici');
 
 module.exports = {
+  status: 0,
   cooldown: 3600,//one hour
   data: new SlashCommandBuilder()
     .setName('cool')
