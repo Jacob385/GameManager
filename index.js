@@ -57,25 +57,25 @@ client.on(Events.InteractionCreate, async interaction => {
 
 
   if (isUndergoingMaintenance || command.status !== 0) {
-    if(interaction.user.id.toString() !== userId){
+    if (interaction.user.id.toString() !== userId) {
       switch (command.status) {
-      case 1:// Maintenance or testing
-        await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again later.', ephemeral: true });
-        return;
-        
-      case 2:// Comeing soon
-        await interaction.reply({ content: 'Comeing soon...', ephemeral: true });
-        
-      case 3:// Out of Order
-        await interaction.reply({ content: 'This command is temporarily out of order. Our team is working to get this up and running again soon. Thank you for your patience.', ephemeral: true });
-        return;
-        
-      default:// Unknown status
-        await interaction.reply({ content: 'This command has an unknown status error.', ephemeral: true });
-        return;
+        case 1:// Maintenance or testing
+          await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again later.', ephemeral: true });
+          return;
+
+        case 2:// Comeing soon
+          await interaction.reply({ content: 'Comeing soon...', ephemeral: true });
+
+        case 3:// Out of Order
+          await interaction.reply({ content: 'This command is temporarily out of order. Our team is working to get this up and running again soon. Thank you for your patience.', ephemeral: true });
+          return;
+
+        default:// Unknown status
+          await interaction.reply({ content: 'This command has an unknown status error.', ephemeral: true });
+          return;
+      }
     }
-    }
-    console.log("command.status: "+command.status);
+    console.log("command.status: " + command.status);
   }
 
 
