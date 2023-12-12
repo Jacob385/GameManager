@@ -116,7 +116,7 @@ client.on(Events.InteractionCreate, async interaction => {
     }
   }
 
-});//end event
+});//end interaction event
 
 
 

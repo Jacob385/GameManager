@@ -14,9 +14,6 @@ module.exports = {
           .setDescription('Sellect a user to challenge')
           .setRequired(true)
       )
-  /*  new ContextMenuCommandBuilder()
-     .setName('connect4')
-     .setType(ApplicationCommandType.User)*/  //TODO ContextMenu
   ,
 
 
@@ -115,7 +112,7 @@ module.exports = {
         y = Number(y);
         let color = game.board[x][y];
         let inARow = [];
-        //[direction][x/y value]
+        //vectorArray is set up with [direction][y/x value]
         let vectorArray = [[-1, -1], [0, -1], [1, -1], [1, 0], [1, 1], [0, 1], [-1, 1]];
         let currentCell = { x: -1, y: -1 };
         for (let direction = 0; direction < vectorArray.length; direction++) {
