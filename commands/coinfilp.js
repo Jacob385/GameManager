@@ -1,4 +1,4 @@
-const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
+const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
 
 module.exports = {
   status: 0,
@@ -20,10 +20,10 @@ module.exports = {
       .setDescription('flip')
       .addSubcommand(subcommand => subcommand
         .setName('until')
-        .setDescription('Flips a coin ultil it lands on H/T')
+        .setDescription('Flips a coin until it lands on H/T')
         .addIntegerOption(option => option
           .setName('heads-tails')
-          .setDescription('Flips a coin ultil it lands on this')
+          .setDescription('Flips a coin until it lands on this')
           .setRequired(true)
           .addChoices(
             { name: 'Heads', value: 1 },
@@ -31,45 +31,41 @@ module.exports = {
           )
         )
       )
-    )
-  ,
-  async execute(interaction) {
-    await interaction.deferReply();
+    ),
+  async execute (interaction) {
+    await interaction.deferReply()
 
-    const flip = () => { return Math.floor(Math.random() * 2); }
-    var flipCount = interaction.options.getInteger('count') ?? 1;
-    var HT = interaction.options.getInteger('heads-tails') ?? 0;
-    var output = '';
-    let result;
+    const flip = () => { return Math.floor(Math.random() * 2) }
+    const flipCount = interaction.options.getInteger('count') ?? 1
+    const HT = interaction.options.getInteger('heads-tails') ?? 0
+    let output = ''
+    let result
     switch (interaction.options.getSubcommand()) {
       case 'flip':
-        let htCount = [0, 0];
+        const htCount = [0, 0]
 
         for (let x = 0; x < flipCount; x++) {
-          result = flip();
-          htCount[result]++;
-          output += (result === 1 ? 'Heads' : 'Tails') + '\n';
+          result = flip()
+          htCount[result]++
+          output += (result === 1 ? 'Heads' : 'Tails') + '\n'
         }
         if (flipCount === 1) {
-          await interaction.editReply(">>>" + ' Fliping **1** coin\n**' + (result === 1 ? 'Heads' : 'Tails') + '**');
+          await interaction.editReply('>>>' + ' Fliping **1** coin\n**' + (result === 1 ? 'Heads' : 'Tails') + '**')
+        } else {
+          await interaction.editReply('>>> Fliping **' + flipCount + '** coins' + '\n' + output + '\n**Heads: ' + htCount[1] + ' Tails: ' + htCount[0] + '**')
         }
-        else {
-          await interaction.editReply(">>> Fliping **" + flipCount + '** coins' + '\n' + output + '\n**Heads: ' + htCount[1] + ' Tails: ' + htCount[0] + '**');
-        }
-        break;
+        break
       case 'until':
-        let streak = -1;
+        let streak = -1
         do {
-          streak++;
-          result = flip();
-          output += (result === 1 ? 'Heads' : 'Tails') + '\n';
-        } while (result !== HT);
-        await interaction.editReply(">>> Fliping until " + (HT === 1 ? 'Heads' : 'Tails') + '\n' + output + '\n**Streak: ' + streak + '**');
-        break;
+          streak++
+          result = flip()
+          output += (result === 1 ? 'Heads' : 'Tails') + '\n'
+        } while (result !== HT)
+        await interaction.editReply('>>> Fliping until ' + (HT === 1 ? 'Heads' : 'Tails') + '\n' + output + '\n**Streak: ' + streak + '**')
+        break
       default:
-        await interaction.editReply('There was an error while locating this command!');
+        await interaction.editReply('There was an error while locating this command!')
     }
-
-
-  },
-};
+  }
+}
