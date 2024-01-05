@@ -1,4 +1,4 @@
-const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
+const { AttachmentBuilder, SlashCommandBuilder } = require('discord.js')
 const Canvas = require('@napi-rs/canvas')
 const { request } = require('undici')
 
@@ -47,7 +47,7 @@ module.exports = {
       context.drawImage(checkmark, 640, 165, 60, 60)
 
       const attachment = new AttachmentBuilder(await canvas.encode('png'), { name: 'cool-person.png' })
-      const message = await interaction.editReply({ files: [attachment], content: `${coolPerson}` })
+      await interaction.editReply({ files: [attachment], content: `${coolPerson}` })
     }
   }
 }

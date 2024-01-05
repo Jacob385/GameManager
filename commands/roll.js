@@ -125,25 +125,29 @@ module.exports = {
         }
         set[x] = currentRoll
 
-        if (x == 0)// if first roll
-        { winningRoll = currentRoll } else if (advantage > 0 && winningRoll < currentRoll)// if advantage and current roll is highter
-        { winningRoll = currentRoll } else if (advantage < 0 && winningRoll > currentRoll)// if disadvantage and current roll is lower
-        { winningRoll = currentRoll } else if (advantage == 0) { // if emphasis and current roll is closer to middle
+        if (x === 0) { // if first roll
+          winningRoll = currentRoll
+        } else if (advantage > 0 && winningRoll < currentRoll) { // if advantage and current roll is highter
+          winningRoll = currentRoll
+        } else if (advantage < 0 && winningRoll > currentRoll) { // if disadvantage and current roll is lower
+          winningRoll = currentRoll
+        } else if (advantage === 0) { // if emphasis and current roll is closer to middle
           if (Math.abs((die / 2) - winningRoll) < Math.abs((die / 2) - currentRoll)) {
             winningRoll = currentRoll
             winningEmphasisMatch = false
-          } else if (Math.abs((die / 2) - winningRoll) == Math.abs((die / 2) - currentRoll) && winningRoll != currentRoll) { winningEmphasisMatch = true }
+          } else if (Math.abs((die / 2) - winningRoll) === Math.abs((die / 2) - currentRoll) && winningRoll !== currentRoll) { winningEmphasisMatch = true }
         }
 
         x++
-      } while (advantage != null && x < advantageMagnitude + 1)
+        if (advantage != null) { break }
+      } while (x < advantageMagnitude + 1)
 
       // bolds the number used and crosses out the unused ones as they are added to the string
       let isWinningRollAdded = false
       let isBumped = false
       for (let x = 0; x < set.length; x++) {
         // if its the roll that is used
-        if (set[x] == winningRoll && !isWinningRollAdded && !winningEmphasisMatch && set[x] >= bumpPoint) {
+        if (set[x] === winningRoll && !isWinningRollAdded && !winningEmphasisMatch && set[x] >= bumpPoint) {
           list += '**' + set[x] + '**'
           isWinningRollAdded = true
         } else {
@@ -167,18 +171,22 @@ module.exports = {
             x = 0
             do {
               currentRoll = set[x]
-              if (x == 0)// if first roll
-              { winningRoll = currentRoll } else if (advantage > 0 && winningRoll < currentRoll)// if advantage and current roll is highter
-              { winningRoll = currentRoll } else if (advantage < 0 && winningRoll > currentRoll)// if disadvantage and current roll is lower
-              { winningRoll = currentRoll } else if (advantage == 0) { // if emphasis and current roll is closer to middle
+              if (x === 0) { // if first roll
+                winningRoll = currentRoll
+              } else if (advantage > 0 && winningRoll < currentRoll) { // if advantage and current roll is highter
+                winningRoll = currentRoll
+              } else if (advantage < 0 && winningRoll > currentRoll) { // if disadvantage and current roll is lower
+                winningRoll = currentRoll
+              } else if (advantage === 0) { // if emphasis and current roll is closer to middle
                 if (Math.abs((die / 2) - winningRoll) < Math.abs((die / 2) - currentRoll)) {
                   winningRoll = currentRoll
                   winningEmphasisMatch = false
-                } else if (Math.abs((die / 2) - winningRoll) == Math.abs((die / 2) - currentRoll) && winningRoll != currentRoll) { winningEmphasisMatch = true }
+                } else if (Math.abs((die / 2) - winningRoll) === Math.abs((die / 2) - currentRoll) && winningRoll !== currentRoll) { winningEmphasisMatch = true }
               }
 
               x++
-            } while (advantage != null && x < advantageMagnitude + 1)
+              if (advantage != null) { break }
+            } while (x < advantageMagnitude + 1)
             x = -1
           }
         }
@@ -195,8 +203,8 @@ module.exports = {
       sum += winningRoll
     }
 
-    const output = '>>> Rolling a **' + quantity + 'D' + die + (modifier != 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage != null ? advantageString + (advantageMagnitude > 1 ? ': ' + advantageMagnitude + ' ' : ' ') : '') + extraString +
-      '\n' + list + (modifier != 0 ? '\nResult: ' + sum + (modifier > 0 ? '+' : '') + modifier : '') + '\nFinal: **' + (sum + modifier) + '**'
+    const output = '>>> Rolling a **' + quantity + 'D' + die + (modifier !== 0 ? (modifier > 0 ? '+' : '') + modifier : '') + '** ' + (advantage !== null ? advantageString + (advantageMagnitude > 1 ? ': ' + advantageMagnitude + ' ' : ' ') : '') + extraString +
+      '\n' + list + (modifier !== 0 ? '\nResult: ' + sum + (modifier > 0 ? '+' : '') + modifier : '') + '\nFinal: **' + (sum + modifier) + '**'
 
     if (output.length <= 2000) {
       await interaction.editReply(output)

@@ -1,4 +1,4 @@
-const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder } = require('discord.js')
 
 module.exports = {
   status: 0,
@@ -40,9 +40,10 @@ module.exports = {
     const HT = interaction.options.getInteger('heads-tails') ?? 0
     let output = ''
     let result
+    const htCount = [0, 0]
+    let streak = -1
     switch (interaction.options.getSubcommand()) {
       case 'flip':
-        const htCount = [0, 0]
 
         for (let x = 0; x < flipCount; x++) {
           result = flip()
@@ -56,7 +57,7 @@ module.exports = {
         }
         break
       case 'until':
-        let streak = -1
+
         do {
           streak++
           result = flip()

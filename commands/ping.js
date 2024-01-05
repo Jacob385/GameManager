@@ -1,6 +1,6 @@
-const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
-const Canvas = require('@napi-rs/canvas')
-const { request } = require('undici')
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
+// const Canvas = require('@napi-rs/canvas')
+// const { request } = require('undici')
 const { userId } = require('../config.json')
 
 module.exports = {

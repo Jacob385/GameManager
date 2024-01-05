@@ -162,7 +162,6 @@ module.exports = {
 
       let tile = Number(i.customId.split('e')[1])
       do {
-        
         // convert tile number to x and y coords
         const y = Math.floor(-tile / 3 + 3)
         const x = (tile - 1) % 3
@@ -284,9 +283,9 @@ module.exports = {
 
         moveScores.board[Math.floor(-validMoves[x] / 3 + 3)][(validMoves[x] - 1) % 3] = value
       }
-      //console.log('Moves scores are\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')// TODOremove
-      //moveScores.printBoard()
-      //console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+      // console.log('Moves scores are\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')// TODOremove
+      // moveScores.printBoard()
+      // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
 
       if (availableTileCount < 1) {
         console.log('out of moves')// TODOremove
