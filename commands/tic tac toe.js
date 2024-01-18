@@ -139,7 +139,6 @@ module.exports = {
     }
     const message = await interaction.editReply({ files: [attachment], content: '', embeds: [embed], components: ActionRowArray })
 
-    // buttons
     const filter = i => {
       // if wrong command return false
       if (i.customId.split('e')[0] !== 'tictacto') {
@@ -191,8 +190,8 @@ module.exports = {
     /// /////////////////////////////////////////////////////////////////////////////
     /// /////////////////////////////////////////////////////////////////////////////
     async function boardPicBuilder (x = -1, y = -1) {
-      if (x < 0 ^ y < 0) {
-        console.log('Error one invalid cord')// TODO address (should not be reachable)
+      if (x < 0 ^ y < 0) { // should not be reachable
+        console.log('Error one invalid cord')
         return
       }
       if (x >= 0 && y >= 0) {
