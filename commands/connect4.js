@@ -50,7 +50,7 @@ module.exports = {
       player1 = interaction.options.getUser('opponent').id
     }
 
-    if ( interaction.options.getUser('opponent').id === clientId) { // TODO
+    if (interaction.options.getUser('opponent').id === clientId) { // TODO
       return await interaction.editReply({ content: 'Challengeing GameManager comeing soon...' })
     }
 
@@ -102,7 +102,7 @@ module.exports = {
       .setDescription(boardBuilder(-1, currentGame.board))
 
     const message = await interaction.editReply({ content: `You challenged <@${interaction.options.getUser('opponent').id}>.`, embeds: [embed], components: [row, row2] })
-    
+
     //    await message.channel.send(message.id);//TODO remove debug
 
     const filter = i => {

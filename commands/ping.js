@@ -36,5 +36,5 @@ module.exports = {
 
       await i.editReply({ content: '' + testArray, components: [row] })
     })
-  }
+  }// end execute
 }
