@@ -11,6 +11,6 @@ module.exports = {
     await interaction.deferReply()
 
     await interaction.editReply('Pong!')
-  }
+  }// end execute
 }
 */

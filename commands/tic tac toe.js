@@ -40,7 +40,7 @@ module.exports = {
             .setDescription('Only applicable when faceing GameManager')
             .addChoices(
               { name: 'Easy', value: 0 },
-              // { name: 'Medium', value: 1 },// TODO
+              { name: 'Medium', value: 1 },
               { name: 'Hard', value: 2 }
             )
         )
@@ -239,12 +239,44 @@ module.exports = {
         return validMoves[Math.floor(Math.random() * availableTileCount)]
       }
 
-      function mediumBot () {
-      // TODO
-        console.log('TODO')
-        return -1
-      }
+   /*   function mediumBot () {// will play a win in one and will block a win in one for the opponent. Otherwise random
+        const validMoves = node.getValidMoves()
+        const availableTileCount = validMoves.length
+        const myPiece = (clientId === player1 ? 'X' : 'O')
 
+        // used to show scores
+        const moveScores = new Game()
+        for (let y = 0; y < moveScores.board.length; y++) {
+          for (let x = 0; x < moveScores.board[y].length; x++) { moveScores.board[x][y] = '-' }
+        }
+        
+        let goodMoves = []
+        for (let x = 0; x < availableTileCount; x++) {
+          const newNode = node.copy()
+          const state = newNode.placePiece(validMoves[x])
+
+          let value
+          if (state === myPiece) { value = 2 } else {  }
+
+          if (value > bestValue) {
+            bestMoves = []
+            bestValue = value
+          }
+          if (value === bestValue) {
+            bestMoves.push(validMoves[x])
+          }
+
+          moveScores.board[Math.floor(-validMoves[x] / 3 + 3)][(validMoves[x] - 1) % 3] = value
+        }
+        
+
+        if (availableTileCount < 1) {
+          console.log('out of moves')// TODOremove
+          process.exit()
+        }
+        return bestMoves
+      }
+*/
       function perfectBot () { // plays perfectly
         const bestMoves = alphabetaStart(board)
         const bestMoveCount = bestMoves.length

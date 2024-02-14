@@ -19,8 +19,8 @@ module.exports = {
 
     const boardSize = interaction.options.getInteger('difficulty') ?? 3
     const grid = Array.from({ length: boardSize }, () => Array(boardSize).fill(false))
-var contentText = ''
-    
+    let contentText = ''
+
     // makes a 2d array of buttons. discord limits biggest size to 5 per row
     const ActionRowArray = Array.from({ length: boardSize }, () => new ActionRowBuilder())
     for (let idnumber = 1; idnumber <= boardSize * boardSize; idnumber++) {
@@ -63,10 +63,10 @@ var contentText = ''
         )()
       ) { // if all tiles are false
         collector.stop()
-          contentText = `:trophy: <@${interaction.user.id}>. Wins! :trophy:`
+        contentText = `:trophy: <@${interaction.user.id}>. Wins! :trophy:`
       }
 
-      await i.editReply({content: contentText, components: ActionRowArray })
+      await i.editReply({ content: contentText, components: ActionRowArray })
     })
 
     function select (x, y) { // swap a tile and its orthogonal neighbors
@@ -90,7 +90,7 @@ var contentText = ''
       ActionRowArray[x].components.at(y).setStyle((grid[x][y] ? ButtonStyle.Primary : ButtonStyle.Secondary))
     }
 
-    function populateBoard () {// populates the board with random moves
+    function populateBoard () { // populates the board with random moves
       // makes an array of numbers from 1 to boardSize^2
       const openTiles = Array.from({ length: boardSize * boardSize }, (_, i) => i + 1)
 
@@ -98,7 +98,7 @@ var contentText = ''
         const index = Math.floor(Math.random() * openTiles.length)
         const tile = openTiles[index]
 
-        //console.log(tile)//prints answer key
+        // console.log(tile)//prints answer key
 
         openTiles.splice(index, 1)
 
