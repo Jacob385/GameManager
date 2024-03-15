@@ -1,5 +1,6 @@
 // this file sereves as an outline for makeing new commands and should not be run
-/* const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
+/*
+const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
 
 module.exports = {
   status: 2,

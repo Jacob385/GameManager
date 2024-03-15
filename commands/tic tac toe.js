@@ -70,7 +70,7 @@ module.exports = {
     }
 
     const gameMode = interaction.options.getInteger('gamemode') ?? 0
-    const difficulty = interaction.options.getInteger('difficulty') ?? 2
+    const difficulty = interaction.options.getInteger('difficulty') ?? 1
     let turnCount = 1
     let maxNumOfMoves
     let board
@@ -165,6 +165,7 @@ module.exports = {
         const y = Math.floor(-tile / 3 + 3)
         const x = (tile - 1) % 3
 
+        console.log(x, y)// TODOremove
         attachment = await boardPicBuilder(x, y)
         ActionRowArray[y].components.at(x).setDisabled(true)
         embed.setColor((board.player === 1 ? 0x0099FF : 0xFF0000))
@@ -239,25 +240,37 @@ module.exports = {
         return validMoves[Math.floor(Math.random() * availableTileCount)]
       }
 
-   /*   function mediumBot () {// will play a win in one and will block a win in one for the opponent. Otherwise random
-        const validMoves = node.getValidMoves()
+      function mediumBot () { // will play a win in one and will block a win in one for the opponent. Otherwise random
+        const validMoves = board.getValidMoves()
         const availableTileCount = validMoves.length
         const myPiece = (clientId === player1 ? 'X' : 'O')
+        const theirPiece = (clientId === player1 ? 'O' : 'X')
+        let bestValue = -Infinity
+        let bestMoves = []
 
         // used to show scores
         const moveScores = new Game()
         for (let y = 0; y < moveScores.board.length; y++) {
           for (let x = 0; x < moveScores.board[y].length; x++) { moveScores.board[x][y] = '-' }
         }
-        
-        let goodMoves = []
+
         for (let x = 0; x < availableTileCount; x++) {
-          const newNode = node.copy()
-          const state = newNode.placePiece(validMoves[x])
+          const node = board.copy()
+          const state = node.placePiece(validMoves[x])
 
           let value
-          if (state === myPiece) { value = 2 } else {  }
-
+          if (state === myPiece) { value = 1 } else {
+            const theirMoves = node.getValidMoves()
+            for (let y = 0; y < theirMoves.length; y++) {
+              const newNode = node.copy()
+              const state2 = newNode.placePiece(theirMoves[y])
+              if (state2 === theirPiece) {
+                value = -1
+                break
+              }
+            }
+          }
+          value = value ?? 0
           if (value > bestValue) {
             bestMoves = []
             bestValue = value
@@ -268,15 +281,17 @@ module.exports = {
 
           moveScores.board[Math.floor(-validMoves[x] / 3 + 3)][(validMoves[x] - 1) % 3] = value
         }
-        
 
         if (availableTileCount < 1) {
           console.log('out of moves')// TODOremove
           process.exit()
         }
-        return bestMoves
+        // console.log('Moves scores are\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')// TODOremove
+        // moveScores.printBoard()
+        // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        return bestMoves[Math.floor(Math.random() * bestMoves.length)]
       }
-*/
+
       function perfectBot () { // plays perfectly
         const bestMoves = alphabetaStart(board)
         const bestMoveCount = bestMoves.length
