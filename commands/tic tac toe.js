@@ -1,7 +1,7 @@
 const { AttachmentBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js')
 const Canvas = require('@napi-rs/canvas')
-//const { clientId } = require('../config.json')
-const clientId = env.DISCORD_APPLICATION_ID;
+const { clientId } = require('../config.json')
+
 module.exports = {
   status: 0,
   data: new SlashCommandBuilder()

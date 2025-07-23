@@ -1,7 +1,7 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js')
 // const Canvas = require('@napi-rs/canvas')
 // const { request } = require('undici')
-//const { userId } = require('../config.json')
+const { userId } = require('../config.json')
 
 module.exports = {
   status: 1,
@@ -11,7 +11,7 @@ module.exports = {
   async execute (interaction) {
     await interaction.deferReply()
 
-    if (interaction.user.id.toString() !== env.UserId) {
+    if (interaction.user.id.toString() !== userId) {
       await interaction.editReply('Pong!')
       return
     }

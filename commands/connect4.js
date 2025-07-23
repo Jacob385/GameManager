@@ -1,5 +1,5 @@
 const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, SlashCommandBuilder } = require('discord.js')
-//const { clientId } = require('../config.json')
+const { clientId } = require('../config.json')
 
 module.exports = {
   status: 0,
@@ -34,7 +34,7 @@ module.exports = {
     await interaction.deferReply()
 
     // if opponent is a different bot
-    if (interaction.options.getUser('opponent').bot && interaction.options.getUser('opponent').id.toString() !== env.DISCORD_APPLICATION_ID) {
+    if (interaction.options.getUser('opponent').bot && interaction.options.getUser('opponent').id.toString() !== clientId) {
       return await interaction.editReply({ content: 'You cant challenge bots other than GameManager' })
     }
 
@@ -50,7 +50,7 @@ module.exports = {
       player1 = interaction.options.getUser('opponent').id
     }
 
-    if (interaction.options.getUser('opponent').id === env.DISCORD_APPLICATION_ID) { // TODO
+    if (interaction.options.getUser('opponent').id === clientId) { // TODO
       return await interaction.editReply({ content: 'Challengeing GameManager comeing soon...' })
     }
 

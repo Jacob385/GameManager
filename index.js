@@ -16,7 +16,8 @@ const fs = require('node:fs')
 const path = require('node:path')
 // Require the necessary discord.js classes
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js')
-//const { token, userId } = require('./config.json')
+const { userId } = require('./config.json')
+const { token } = require('./token.json')
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -54,7 +55,7 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 
   if (isUndergoingMaintenance || command.status !== 0) {
-    if (interaction.user.id.toString() !== env.UserId) {
+    if (interaction.user.id.toString() !== userId) {
       switch (command.status) {
         case 1:// Maintenance or testing
           await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again later.', ephemeral: true })
@@ -87,7 +88,7 @@ client.on(Events.InteractionCreate, async interaction => {
   const defaultCooldownDuration = 0
   const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000
 
-  if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== env.UserId) {
+  if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== userId) {
     const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount
 
     if (now < expirationTime) {
@@ -120,4 +121,4 @@ client.once(Events.ClientReady, c => {
 })
 
 // Log in to Discord with your client's token
-client.login(env.DISCORD_TOKEN)
+client.login(token)
