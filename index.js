@@ -1,146 +1,91 @@
-const express = require('express')
-const app = express()
+/**
+ * The core server that runs on a Cloudflare worker.
+ */
 
-app.get('/', (req, res) => {
-  res.send('hello earth')
-})
+import { AutoRouter } from 'itty-router';
+import {InteractionResponseType, InteractionType, verifyKey,} from 'discord-interactions';
+import { InteractionResponseFlags } from 'discord-interactions';
 
-app.listen(3000, () => {
-  console.log('Well, it\'s one for the money')
-  console.log('Two for the show')
-  console.log('Three to get ready')
-  console.log('now go! cat! go!')
-})
-
-const fs = require('node:fs')
-const path = require('node:path')
-// Require the necessary discord.js classes
-const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js')
-const { userId } = require('./config.json')
-
-
-// Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
-
-client.commands = new Collection()
-const commandsPath = path.join(__dirname, 'commands')
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
-
-for (const file of commandFiles) {
-  const filePath = path.join(commandsPath, file)
-  const command = require(filePath)
-  // Set a new item in the Collection with the key as the command name and the value as the exported module
-  if ('data' in command && 'execute' in command) {
-    client.commands.set(command.data.name, command)
-  } else {
-    console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
+class JsonResponse extends Response {
+  constructor(body, init) {
+    const jsonBody = JSON.stringify(body);
+    init = init || {
+      headers: {
+        'content-type': 'application/json;charset=UTF-8',
+      },
+    };
+    super(jsonBody, init);
   }
 }
 
-client.cooldowns = new Collection()
+const router = AutoRouter();
 
-const isUndergoingMaintenance = false// toggle this
-client.on(Events.InteractionCreate, async interaction => {
-  // if (!interaction.isButton()) //TODO consiter handaling buttons over here
+/**
+ * A simple :wave: hello page to verify the worker is working.
+ */
+router.get('/', (request, env) => {
+  return new Response(`👋 ${env.DISCORD_APPLICATION_ID}`);
+});
 
-  if (!interaction.isChatInputCommand()) return
-
-  // console.log(interaction);
-
-  const command = interaction.client.commands.get(interaction.commandName)
-
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`)
-    return
+/**
+ * Main route for all requests sent from Discord.  All incoming messages will
+ * include a JSON payload described here:
+ * https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object
+ */
+router.post('/', async (request, env) => {
+  const { isValid, interaction } = await server.verifyDiscordRequest(request,env,);
+  if (!isValid || !interaction) {
+    return new Response('Bad request signature.', { status: 401 });
   }
 
-  if (isUndergoingMaintenance || command.status !== 0) {
-    if (interaction.user.id.toString() !== userId) {
-      switch (command.status) {
-        case 1:// Maintenance or testing
-          await interaction.reply({ content: 'Bot is undergoing maintenance and/or testing.\nPlease try again later.', ephemeral: true })
-          return
+  if (interaction.type === InteractionType.PING) {
+    // The `PING` message is used during the initial webhook handshake, and is
+    // required to configure the webhook in the developer portal.
+    return new JsonResponse({
+      type: InteractionResponseType.PONG,
+    });
+  }
 
-        case 2:// Comeing soon
-          await interaction.reply({ content: 'Comeing soon...', ephemeral: true })
-          return
-        case 3:// Out of Order
-          await interaction.reply({ content: 'This command is temporarily out of order. Our team is working to get this up and running again soon. Thank you for your patience.', ephemeral: true })
-          return
-
-        default:// Unknown status
-          await interaction.reply({ content: 'This command has an unknown status error.', ephemeral: true })
-          return
+  if (interaction.type === InteractionType.APPLICATION_COMMAND) {
+    // Most user commands will come as `APPLICATION_COMMAND`.
+    switch (interaction.data.name.toLowerCase()) {
+      case "ping": {
+        const textResponse = "Pong!";
+        return new JsonResponse({
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: textResponse,
+          },
+        });
       }
-    }
-    console.log('command.status: ' + command.status)
-  }
-
-  const { cooldowns } = client
-
-  if (!cooldowns.has(command.data.name)) {
-    cooldowns.set(command.data.name, new Collection())
-  }
-
-  // cooldown check
-  const now = Date.now()
-  const timestamps = cooldowns.get(command.data.name)
-  const defaultCooldownDuration = 0
-  const cooldownAmount = (command.cooldown ?? defaultCooldownDuration) * 1000
-
-  if (timestamps.has(interaction.user.id) && interaction.user.id.toString() !== userId) {
-    const expirationTime = timestamps.get(interaction.user.id) + cooldownAmount
-
-    if (now < expirationTime) {
-      const expiredTimestamp = Math.round(expirationTime / 1000)
-      return interaction.reply({ content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`, ephemeral: true })
+      default:
+        return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
     }
   }
-  timestamps.set(interaction.user.id, now)
-  setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount)
 
-  // try to run command
-  try {
-    await command.execute(interaction)
-  } catch (error) {
-    console.error(error)
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true })
-    } else {
-      await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true })
-    }
+  console.error('Unknown Type');
+  return new JsonResponse({ error: 'Unknown Type' }, { status: 400 });
+});
+router.all('*', () => new Response('Not Found.', { status: 404 }));
+
+async function verifyDiscordRequest(request, env) {
+  const signature = request.headers.get('x-signature-ed25519');
+  const timestamp = request.headers.get('x-signature-timestamp');
+  const body = await request.text();
+  const isValidRequest =
+    signature &&
+    timestamp &&
+    (await verifyKey(body, signature, timestamp, env.DISCORD_PUBLIC_KEY));
+  if (!isValidRequest) {
+    return { isValid: false };
   }
-})// end interaction event
 
-// When the client is ready, run this code (only once)
-// We use 'c' for the event parameter to keep it separate from the already defined 'client'
-client.once(Events.ClientReady, c => {
-  console.log(`Logged in as ${c.user.tag}`)
-
-  client.user.setActivity('in ' + client.guilds.cache.size + ' servers', { type: ActivityType.Playing })
-})
-
-
-let token = "-1";
-// If running on replit, use the token from the token.json file
-try {
-  token = require('./token.json').token;
+  return { interaction: JSON.parse(body), isValid: true };
 }
-//else use the token from the cloudflare secrets
-catch(err) {
-  const process  = require('node:process');
-  token = process.env.DISCORD_TOKEN;
 
-  console.log('DEBUG //////////////////////////////////////')
-  //console.log(typeof DISCORD_TOKEN);
-  console.log(typeof token);
-  console.log(token.length);
-  if(token.length < 20)
-    console.log(token)
-  else
-    console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
-}
-console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
+const server = {
+  verifyDiscordRequest,
+  fetch: router.fetch,
+};
 
-// Log in to Discord with your client's token
-client.login(token)
+export default server;
