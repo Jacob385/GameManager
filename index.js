@@ -18,14 +18,6 @@ const path = require('node:path')
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js')
 const { userId } = require('./config.json')
 
-// If running on replit, use the token from the token.json file. else use the token from the cloudflare secrets
-let { token }="-1" ;
-try {
-  token = require('./token.json') 
-}
-catch(err) {
-  token = process.env.DISCORD_TOKEN
-}
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
@@ -127,6 +119,17 @@ client.once(Events.ClientReady, c => {
 
   client.user.setActivity('in ' + client.guilds.cache.size + ' servers', { type: ActivityType.Playing })
 })
+
+
+let token = "-1";
+// If running on replit, use the token from the token.json file
+try {
+  token = require('./token.json').token;
+}
+//else use the token from the cloudflare secrets
+catch(err) {
+  token = process.env.DISCORD_TOKEN;
+}
 
 // Log in to Discord with your client's token
 client.login(token)

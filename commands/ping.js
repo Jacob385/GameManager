@@ -37,9 +37,9 @@ module.exports = {
         //channel.send('<:'+value.emojis.at(0).name +':'+value.emojis.at(0).id+'>')
         
         value.emojis.each(emoji => {
-          channel.send('<:'+emoji.name +':'+emoji.id+'>';
+          channel.send('<:'+emoji.name +':'+emoji.id+'>');
           channel.send(emoji.url)
-        }))
+        })
       },
       function(error) {console.log('Could not find server') }
     )
