@@ -134,7 +134,10 @@ catch(err) {
   console.log(typeof process.env.DISCORD_TOKEN);
   console.log(typeof token);
   console.log(token.length);
-  console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
+  if(token.length < 20)
+    console.log(token)
+  else
+    console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
 }
 console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
 
