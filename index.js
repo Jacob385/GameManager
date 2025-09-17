@@ -128,10 +128,10 @@ try {
 }
 //else use the token from the cloudflare secrets
 catch(err) {
-  token = String(process.env.DISCORD_TOKEN);
+  token = postgres(env.DISCORD_TOKEN);
 
   console.log('DEBUG //////////////////////////////////////')
-  console.log(typeof process.env.DISCORD_TOKEN);
+  //console.log(typeof DISCORD_TOKEN);
   console.log(typeof token);
   console.log(token.length);
   if(token.length < 20)
