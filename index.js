@@ -130,7 +130,7 @@ try {
 catch(err) {
   const postgres = require("postgres");
 
-  token = postgres(env.DISCORD_TOKEN);
+  token = postgres(process.env.DISCORD_TOKEN);
 
   console.log('DEBUG //////////////////////////////////////')
   //console.log(typeof DISCORD_TOKEN);
