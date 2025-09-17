@@ -17,7 +17,9 @@ const path = require('node:path')
 // Require the necessary discord.js classes
 const { Client, Collection, Events, GatewayIntentBits, ActivityType } = require('discord.js')
 const { userId } = require('./config.json')
-const { token } = require('./token.json')
+
+// If running on replit, use the token from the token.json file. else use the token from the cloudflare secrets
+const { token } = require('./token.json') ?? process.env.DISCORD_TOKEN
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
