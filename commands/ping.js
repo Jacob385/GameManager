@@ -24,6 +24,35 @@ module.exports = {
 
     const testArray = []
 
+     const channel = interaction.client.channels.cache.get('1352109995650584616');
+   // let channel = interaction.client.guilds.fetch('1053562836707725342').channels.fetch('1352109995650584616');
+   
+    const server = interaction.client.fetchGuildPreview('1118223835364331627')
+   
+    server.then(
+      function(value) {
+        console.log('Found server!')
+        console.log(value.iconURL())
+        channel.send(value.iconURL());
+        //channel.send('<:'+value.emojis.at(0).name +':'+value.emojis.at(0).id+'>')
+        
+        value.emojis.each(emoji => {
+          channel.send('<:'+emoji.name +':'+emoji.id+'>';
+          channel.send(emoji.url)
+        }))
+      },
+      function(error) {console.log('Could not find server') }
+    )
+
+
+
+    
+    
+   
+  
+    //channel.send('A Unicode emoji: \:thumbsup:' + '\nA Discord emoji: :thumbsup:');
+
+    
     const message = await interaction.editReply({ content: 'admin Pong!', components: [row] })
 
     const filter = i => { return true }
