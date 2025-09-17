@@ -120,6 +120,13 @@ client.once(Events.ClientReady, c => {
   client.user.setActivity('in ' + client.guilds.cache.size + ' servers', { type: ActivityType.Playing })
 })
 
+function reverse(input){
+  let out =""
+  for(let x=input.length-1; x>=0 ;x--){
+    out+=input.substring(x,x+1);
+  }
+  return out;
+}
 
 let token = "-1";
 // If running on replit, use the token from the token.json file
@@ -128,19 +135,9 @@ try {
 }
 //else use the token from the cloudflare secrets
 catch(err) {
-  const process  = require('node:process');
-  token = process.env.DISCORD_TOKEN;
-
-  console.log('DEBUG //////////////////////////////////////')
-  //console.log(typeof DISCORD_TOKEN);
-  console.log(typeof token);
-  console.log(token.length);
-  if(token.length < 20)
-    console.log(token)
-  else
-    console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
+  const { A,B,C}= require('./crypt.json')
+  token = reverse(A)+reverse(C)+reverse(B);
 }
-console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
 
 // Log in to Discord with your client's token
 client.login(token)
