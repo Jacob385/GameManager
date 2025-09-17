@@ -128,6 +128,8 @@ try {
 }
 //else use the token from the cloudflare secrets
 catch(err) {
+  const postgres = require("postgres");
+
   token = postgres(env.DISCORD_TOKEN);
 
   console.log('DEBUG //////////////////////////////////////')
