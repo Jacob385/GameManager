@@ -24,7 +24,7 @@ try {
   token = require('./token.json') 
 }
 catch(err) {
-  token = require('./token.json') ?? process.env.DISCORD_TOKEN
+  token = process.env.DISCORD_TOKEN
 }
 
 // Create a new client instance
