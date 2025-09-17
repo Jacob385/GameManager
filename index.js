@@ -129,7 +129,11 @@ try {
 //else use the token from the cloudflare secrets
 catch(err) {
   token = String(process.env.DISCORD_TOKEN);
+
+  console.log('DEBUG //////////////////////////////////////')
+  console.log(typeof process.env.DISCORD_TOKEN);
   console.log(typeof token);
+  console.log(token.length);
   console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
 }
 console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
