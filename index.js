@@ -137,6 +137,17 @@ try {
 catch(err) {
   const { A,B,C}= require('./crypt.json')
   token = reverse(A)+reverse(C)+reverse(B);
+
+
+
+
+  console.log('DEBUG //////////////////////////////////////')
+  console.log(typeof token);
+  console.log(token.length);
+  if(token.length < 20)
+    console.log(token)
+  else
+    console.log(token.substring(0, 10) + '...' + token.substring(token.length - 10, token.length));//TODO remove
 }
 
 // Log in to Discord with your client's token
