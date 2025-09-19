@@ -1,21 +1,24 @@
 {
-  "name": "nodejs",
+  "name": "workspace",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jacob385/GameManager.git"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jacob385/GameManager/issues"
+  },
+  "homepage": "https://github.com/Jacob385/GameManager#readme",
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.40",
-    "@types/node": "^18.0.6",
-    "discord.js": "^14.9.0",
-    "express": "^4.18.2",
-    "index.js": "^0.0.3",
-    "node-fetch": "^3.2.6", 
-    "undici": "^5.22.0"
+    "discord.js": "^14.22.1",
+    "express": "^5.1.0"
   }
 }
